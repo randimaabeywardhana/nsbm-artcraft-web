@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NSBM ArtCraft | Student Arts & Handcraft Showcasing System</title>
+  <link rel="stylesheet" href="assets/css/material.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- Dynamic Application Header -->
+  <header id="app-header"></header>
+
+  <!-- Hero Section with NSBM Palette -->
+  <section class="hero-section">
+    <div class="container hero-content">
+      <div class="hero-tag">
+        <span>NSBM Green University &bull; Faculty of Computing</span>
+      </div>
+      <h1 class="hero-title">Discover, Showcase & Celebrate Student Artistry</h1>
+      <p class="hero-desc">
+        The official digital gallery for student paintings, architectural sketches, handcrafted pottery, 
+        digital concepts, and creative campus exhibitions.
+      </p>
+      <div class="hero-actions">
+        <a href="gallery.html" class="btn btn-primary btn-lg">Explore Art Gallery</a>
+        <a href="upload-artwork.html" class="btn btn-outline btn-lg" style="color: #FFFFFF; border-color: #FFFFFF;">Submit Your Artwork</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Counter Ribbon -->
+  <section class="stats-ribbon">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="num" id="home-stat-artworks">12+</div>
+          <div class="label">Showcased Artworks</div>
+        </div>
+        <div class="stat-item">
+          <div class="num" id="home-stat-artists">45+</div>
+          <div class="label">Student Creators</div>
+        </div>
+        <div class="stat-item">
+          <div class="num" id="home-stat-exhibitions">3</div>
+          <div class="label">Showcase Exhibitions</div>
+        </div>
+        <div class="stat-item">
+          <div class="num" id="home-stat-views">1,800+</div>
+          <div class="label">Campus Views</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Masterpieces Section -->
+  <section style="padding: 60px 0;">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Curator's Choice &bull; Featured Works</h2>
+          <p class="section-subtitle">Exemplary creations handpicked by NSBM art curators</p>
+        </div>
+        <a href="gallery.html" class="btn btn-outline btn-sm">View All Gallery &rarr;</a>
+      </div>
+
+      <div class="art-grid" id="featured-grid">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Explore by Categories Section -->
+  <section style="padding: 60px 0; background: #FFFFFF; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Explore Creative Disciplines</h2>
+          <p class="section-subtitle">Browse through specialized fields of student art and craft</p>
+        </div>
+        <a href="gallery.html" class="btn btn-outline btn-sm">All Categories</a>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px;" id="home-categories-grid">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Upcoming Showcase Exhibitions Banner -->
+  <section style="padding: 60px 0;">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Campus Art Exhibitions</h2>
+          <p class="section-subtitle">Upcoming and live physical showcasing events at NSBM Green University</p>
+        </div>
+        <a href="exhibitions.html" class="btn btn-outline btn-sm">Full Calendar &rarr;</a>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;" id="home-exhibitions-grid">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to Action Banner -->
+  <section style="background: linear-gradient(135deg, var(--nsbm-blue) 0%, var(--nsbm-green-dark) 100%); color: #fff; padding: 60px 0; text-align: center;">
+    <div class="container" style="max-width: 760px;">
+      <h2 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 14px;">Are You a Creative Student at NSBM?</h2>
+      <p style="font-size: 1.05rem; color: #E2E8F0; margin-bottom: 26px;">
+        Share your paintings, wood carvings, digital creations, or photography with thousands of peers, lecturers, and art enthusiasts across the campus.
+      </p>
+      <a href="upload-artwork.html" class="btn btn-primary btn-lg">Submit Your Artwork Today</a>
+    </div>
+  </section>
+
+  <!-- Dynamic Application Footer -->
+  <div id="app-footer"></div>
+
+  <!-- Scripts -->
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/gallery.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Load Featured Artworks
+      try {
+        const res = await fetch('api/artworks.php?action=list&featured=1&limit=4');
+        const data = await res.json();
+        if (data.status === 'success') {
+          const grid = document.getElementById('featured-grid');
+          if (grid) {
+            let html = '';
+            (data.data.artworks || []).forEach(art => {
+              const isLiked = art.is_liked;
+              const avgRate = Number(art.avg_rating).toFixed(1);
+
+              html += `
+                <div class="card artwork-card">
+                  <div class="card-img-wrap">
+                    <a href="artwork-detail.html?id=${art.id}">
+                      <img src="${art.image_path}" class="card-img-top" alt="${art.title}">
+                    </a>
+                    <span class="card-badge featured">★ Featured</span>
+                  </div>
+                  <div class="card-body">
+                    <a href="artwork-detail.html?id=${art.id}">
+                      <h3 class="card-title">${art.title}</h3>
+                    </a>
+                    <p class="card-text">${art.description ? (art.description.length > 75 ? art.description.substring(0, 75) + '...' : art.description) : ''}</p>
+                    <div style="margin-bottom: 12px; display: flex; gap: 6px;">
+                      <span class="chip chip-green">${art.medium}</span>
+                    </div>
+                    <div class="card-footer">
+                      <a href="artist-profile.html?id=${art.user_id}" class="artist-pill">
+                        <img src="${art.artist_avatar || 'assets/images/avatar-default.png'}" alt="${art.artist_name}">
+                        <span>${art.artist_name}</span>
+                      </a>
+                      <div class="card-metrics">
+                        <button class="metric-btn ${isLiked ? 'liked' : ''}" onclick="Gallery.toggleLike(${art.id}, this)">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="${isLiked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                          <span class="like-cnt">${art.likes_count}</span>
+                        </button>
+                        <div class="rating-stars">
+                          <span>★</span>
+                          <span style="font-weight: 700; color: var(--text-main); font-size: 0.82rem;">${avgRate}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              `;
+            });
+            grid.innerHTML = html;
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+
+      // Load Categories with PNG icon images
+      try {
+        const cRes = await fetch('api/categories.php?action=list');
+        const cData = await cRes.json();
+        if (cData.status === 'success') {
+          const catGrid = document.getElementById('home-categories-grid');
+          if (catGrid) {
+            let html = '';
+            (cData.data.categories || []).forEach(c => {
+              html += `
+                <a href="gallery.html?category=${c.slug}" class="card" style="text-decoration: none;">
+                  <img src="${c.icon_image}" style="width: 100%; height: 140px; object-fit: cover;">
+                  <div style="padding: 16px;">
+                    <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--nsbm-blue); margin-bottom: 4px;">${c.name}</h3>
+                    <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.4;">${c.description}</p>
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--nsbm-green); display: inline-block; margin-top: 10px;">Browse ${c.artworks_count} Artworks &rarr;</span>
+                  </div>
+                </a>
+              `;
+            });
+            catGrid.innerHTML = html;
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+
+      // Load Exhibitions
+      try {
+        const exRes = await fetch('api/exhibitions.php?action=list');
+        const exData = await exRes.json();
+        if (exData.status === 'success') {
+          const exGrid = document.getElementById('home-exhibitions-grid');
+          if (exGrid) {
+            let html = '';
+            (exData.data.exhibitions || []).slice(0, 2).forEach(ex => {
+              html += `
+                <div class="exhibit-card">
+                  <img src="${ex.banner_image}" class="exhibit-banner" alt="${ex.title}">
+                  <div class="exhibit-content">
+                    <span class="exhibit-date">${ex.start_date} &bull; ${ex.status.toUpperCase()}</span>
+                    <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--nsbm-blue); margin-bottom: 8px;">${ex.title}</h3>
+                    <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px; flex: 1;">${ex.description.substring(0, 110)}...</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 14px;">
+                      <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-muted);">🏛 ${ex.venue}</span>
+                      <a href="exhibition-detail.html?id=${ex.id}" class="btn btn-outline btn-sm">View Details</a>
+                    </div>
+                  </div>
+                </div>
+              `;
+            });
+            exGrid.innerHTML = html;
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    });
+  </script>
+</body>
+</html>
