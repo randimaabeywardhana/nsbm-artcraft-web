@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Registration | NSBM ArtCraft</title>
+  <link rel="stylesheet" href="assets/css/material.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body style="background: #F1F5F9; min-height: 100vh; display: flex; flex-direction: column;">
+
+  <!-- Dynamic Application Header -->
+  <header id="app-header"></header>
+
+  <main class="container" style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 50px 20px;">
+    <div class="card" style="max-width: 580px; width: 100%; padding: 40px; box-shadow: var(--shadow-xl); border-radius: var(--radius-lg);">
+      
+      <div style="text-align: center; margin-bottom: 28px;">
+        <img src="assets/images/nsbm-logo.png" alt="NSBM Seal" style="height: 60px; margin-bottom: 12px; object-fit: contain;">
+        <h1 style="font-size: 1.6rem; font-weight: 800; color: var(--nsbm-blue); line-height: 1.2;">Create Student Creator Account</h1>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Join the student showcasing network at NSBM Green University</p>
+      </div>
+
+      <form id="register-form" onsubmit="handleRegister(event)">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="form-group">
+            <label class="form-label" for="reg-name">Full Name *</label>
+            <input type="text" id="reg-name" class="form-control" placeholder="e.g. Kasun Jayawardena" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="reg-student-id">Student ID</label>
+            <input type="text" id="reg-student-id" class="form-control" placeholder="e.g. NSBM-SOC-2024-555">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="form-group">
+            <label class="form-label" for="reg-email">University Email *</label>
+            <input type="email" id="reg-email" class="form-control" placeholder="e.g. kasun@students.nsbm.ac.lk" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="reg-faculty">Faculty</label>
+            <select id="reg-faculty" class="form-control">
+              <option value="Faculty of Computing">Faculty of Computing</option>
+              <option value="Faculty of Business">Faculty of Business</option>
+              <option value="Faculty of Science">Faculty of Science</option>
+              <option value="Faculty of Engineering">Faculty of Engineering</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-bio">Artist Bio / Specialization</label>
+          <textarea id="reg-bio" class="form-control" rows="2" placeholder="Briefly introduce your artistic interests (e.g. oil painting, digital illustration, ceramics)..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-password">Password (minimum 6 characters) *</label>
+          <input type="password" id="reg-password" class="form-control" minlength="6" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" id="reg-submit-btn" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 1rem; margin-top: 10px;">
+          Register as Student Creator
+        </button>
+      </form>
+
+      <div style="text-align: center; margin-top: 24px; border-top: 1px solid var(--border-color); padding-top: 20px; font-size: 0.88rem; color: var(--text-muted);">
+        Already have an account? 
+        <a href="login.html" style="font-weight: 700; color: var(--nsbm-green);">Sign In here</a>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Dynamic Application Footer -->
+  <div id="app-footer"></div>
+
+  <!-- Scripts -->
+  <script src="assets/js/app.js"></script>
+  <script>
+    async function handleRegister(e) {
+      e.preventDefault();
+      const btn = document.getElementById('reg-submit-btn');
+      btn.disabled = true;
+      btn.textContent = 'Creating Account...';
+
+      const payload = {
+        name: document.getElementById('reg-name').value.trim(),
+        student_id: document.getElementById('reg-student-id').value.trim(),
+        email: document.getElementById('reg-email').value.trim(),
+        faculty: document.getElementById('reg-faculty').value,
+        bio: document.getElementById('reg-bio').value.trim(),
+        password: document.getElementById('reg-password').value
+      };
+
+      try {
+        const res = await fetch('api/auth.php?action=register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          App.showToast(data.message, 'success');
+          setTimeout(() => {
+            window.location.href = 'upload-artwork.html';
+          }, 1000);
+        } else {
+          App.showToast(data.message, 'error');
+          btn.disabled = false;
+          btn.textContent = 'Register as Student Creator';
+        }
+      } catch (err) {
+        App.showToast('Registration failed.', 'error');
+        btn.disabled = false;
+        btn.textContent = 'Register as Student Creator';
+      }
+    }
+  </script>
+</body>
+</html>

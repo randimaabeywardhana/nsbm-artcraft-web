@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | NSBM ArtCraft</title>
+  <link rel="stylesheet" href="assets/css/material.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body style="background: #F1F5F9; min-height: 100vh; display: flex; flex-direction: column;">
+
+  <!-- Dynamic Application Header -->
+  <header id="app-header"></header>
+
+  <main class="container" style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 50px 20px;">
+    <div class="card" style="max-width: 460px; width: 100%; padding: 40px; box-shadow: var(--shadow-xl); border-radius: var(--radius-lg);">
+      
+      <div style="text-align: center; margin-bottom: 28px;">
+        <img src="assets/images/nsbm-logo.png" alt="NSBM Seal" style="height: 64px; margin-bottom: 12px; object-fit: contain;">
+        <h1 style="font-size: 1.6rem; font-weight: 800; color: var(--nsbm-blue); line-height: 1.2;">NSBM ArtCraft Login</h1>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Faculty of Computing Student Showcasing Portal</p>
+      </div>
+
+      <!-- Quick Demo Credentials Box -->
+      <div style="background: var(--bg-body); border-radius: var(--radius-md); padding: 14px 16px; margin-bottom: 24px; border: 1px solid var(--border-color);">
+        <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">1-Click Quick Demo Sign In:</div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn btn-outline btn-sm" style="flex: 1;" onclick="fillCredentials('admin@nsbm.ac.lk', 'admin123')">
+            Curator (Admin)
+          </button>
+          <button type="button" class="btn btn-outline-blue btn-sm" style="flex: 1;" onclick="fillCredentials('kavindu@students.nsbm.ac.lk', 'student123')">
+            Student Creator
+          </button>
+        </div>
+      </div>
+
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label" for="login-email">Email Address</label>
+          <input type="email" id="login-email" class="form-control" placeholder="e.g. kavindu@students.nsbm.ac.lk" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="login-password">Password</label>
+          <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" id="login-btn" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 1rem; margin-top: 8px;">
+          Sign In to Portal
+        </button>
+      </form>
+
+      <div style="text-align: center; margin-top: 24px; border-top: 1px solid var(--border-color); padding-top: 20px; font-size: 0.88rem; color: var(--text-muted);">
+        Don't have a student account yet? 
+        <a href="register.html" style="font-weight: 700; color: var(--nsbm-green);">Register here</a>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Dynamic Application Footer -->
+  <div id="app-footer"></div>
+
+  <!-- Scripts -->
+  <script src="assets/js/app.js"></script>
+  <script>
+    function fillCredentials(email, pwd) {
+      document.getElementById('login-email').value = email;
+      document.getElementById('login-password').value = pwd;
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const btn = document.getElementById('login-btn');
+      btn.disabled = true;
+      btn.textContent = 'Authenticating...';
+
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+
+      try {
+        const res = await fetch('api/auth.php?action=login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          App.showToast(data.message, 'success');
+          setTimeout(() => {
+            if (data.data.user.role === 'admin') {
+              window.location.href = 'admin-dashboard.html';
+            } else {
+              window.location.href = 'gallery.html';
+            }
+          }, 800);
+        } else {
+          App.showToast(data.message, 'error');
+          btn.disabled = false;
+          btn.textContent = 'Sign In to Portal';
+        }
+      } catch (err) {
+        App.showToast('Login request failed. Check WAMP connection.', 'error');
+        btn.disabled = false;
+        btn.textContent = 'Sign In to Portal';
+      }
+    }
+  </script>
+</body>
+</html>
