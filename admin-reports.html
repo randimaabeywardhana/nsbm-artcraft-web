@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submission & Participation Reports | NSBM ArtCraft Admin</title>
+  <link rel="stylesheet" href="assets/css/material.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    @media print {
+      .nsbm-topbar, .nsbm-navbar, #app-footer, .no-print, .btn, #global-fab {
+        display: none !important;
+      }
+      body {
+        background: #fff !important;
+      }
+      .card, .data-table-card {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Dynamic Application Header -->
+  <header id="app-header"></header>
+
+  <!-- Admin Subheader -->
+  <div style="background: var(--nsbm-blue-dark); color: #fff; padding: 25px 0; border-bottom: 3px solid var(--nsbm-green);" class="no-print">
+    <div class="container">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <a href="admin-dashboard.html" style="color: #CBD5E1; font-size: 0.9rem;">&larr; Admin Dashboard</a>
+          <span style="color: #64748B;">/</span>
+          <h1 style="font-size: 1.5rem; font-weight: 800; margin: 0;">Submission & Participation Reports</h1>
+        </div>
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <a href="api/reports.php?action=export_csv&type=artworks" class="btn btn-primary btn-sm" download>
+            📥 Export Submissions CSV
+          </a>
+          <a href="api/reports.php?action=export_csv&type=exhibitions" class="btn btn-outline btn-sm" style="color: #fff; border-color: #fff;" download>
+            📥 Export Exhibitors CSV
+          </a>
+          <button class="btn btn-outline btn-sm" style="color: #fff; border-color: #fff;" onclick="window.print()">
+            🖨 Print Report
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="container" style="padding: 40px 20px;" id="reports-overview">
+    <!-- University Formal Report Header (Visible in Print & Screen) -->
+    <div style="border-bottom: 2px solid var(--nsbm-green); padding-bottom: 20px; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <img src="assets/images/nsbm-logo.png" style="height: 60px; object-fit: contain;">
+        <div>
+          <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--nsbm-blue); margin: 0;">NSBM GREEN UNIVERSITY &bull; FACULTY OF COMPUTING</h2>
+          <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">NSBM ArtCraft Platform &bull; Official Analytics & Engagement Report</span>
+        </div>
+      </div>
+      <div style="text-align: right; font-size: 0.82rem; color: var(--text-muted);">
+        Generated: <strong>November 2026</strong><br>
+        Curator Verification: <strong>Verified</strong>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-bottom: 36px;">
+      <!-- Category Breakdown -->
+      <div class="data-table-card">
+        <div style="padding: 18px 22px; border-bottom: 1px solid var(--border-color); background: #FAFBFD;">
+          <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--nsbm-blue);">Submissions by Art Category</h3>
+        </div>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Total</th>
+                <th>Approved</th>
+                <th>Pending</th>
+              </tr>
+            </thead>
+            <tbody id="report-category-body">
+              <tr><td colspan="4" style="text-align: center; padding: 20px;">Loading category stats...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Faculty Participation -->
+      <div class="data-table-card">
+        <div style="padding: 18px 22px; border-bottom: 1px solid var(--border-color); background: #FAFBFD;">
+          <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--nsbm-blue);">Engagement by Faculty</h3>
+        </div>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Faculty</th>
+                <th>Student Artists</th>
+                <th>Total Works</th>
+              </tr>
+            </thead>
+            <tbody id="report-faculty-body">
+              <tr><td colspan="3" style="text-align: center; padding: 20px;">Loading faculty stats...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Ranked Creations -->
+    <div class="card" style="padding: 24px; margin-bottom: 30px;">
+      <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--nsbm-blue); margin-bottom: 16px;">
+        Top Performing Artworks (Most Appreciated by Campus Community)
+      </h3>
+      <div id="report-top-liked">
+        <div style="text-align: center; padding: 20px; color: var(--text-muted);">Loading top artworks...</div>
+      </div>
+    </div>
+
+    <!-- Attributions & Verification Footer -->
+    <div style="background: var(--bg-body); padding: 20px 24px; border-radius: var(--radius-md); border: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+      <strong>System Architecture & Database Design:</strong><br>
+      Database Architecture & Schema Normalization: Group Leader & QA Lead<br>
+      Target Environment: WAMP (Apache 2.2.22 / PHP 5.4.3 / MySQL 5.5.24) &bull; Database: <code>`nsbm-artcraft-web`</code><br>
+      All data points reflect live system records stored in MySQL relational tables with foreign key integrity.
+    </div>
+  </main>
+
+  <!-- Dynamic Application Footer -->
+  <div id="app-footer"></div>
+
+  <!-- Scripts -->
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>

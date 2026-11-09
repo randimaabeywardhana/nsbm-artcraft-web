@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Exhibitions | NSBM ArtCraft Admin</title>
+  <link rel="stylesheet" href="assets/css/material.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- Dynamic Application Header -->
+  <header id="app-header"></header>
+
+  <!-- Admin Subheader -->
+  <div style="background: var(--nsbm-blue-dark); color: #fff; padding: 25px 0; border-bottom: 3px solid var(--nsbm-green);">
+    <div class="container">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <a href="admin-dashboard.html" style="color: #CBD5E1; font-size: 0.9rem;">&larr; Admin Dashboard</a>
+          <span style="color: #64748B;">/</span>
+          <h1 style="font-size: 1.5rem; font-weight: 800; margin: 0;">Campus Showcase & Exhibition Events</h1>
+        </div>
+
+        <button class="btn btn-primary btn-sm" onclick="openCreateExhibitionModal()">
+          + Create New Exhibition
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <main class="container" style="padding: 40px 20px;">
+    <div class="data-table-card" id="exhibitions-management-table">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Banner</th>
+              <th>Exhibition & Theme</th>
+              <th>Campus Venue</th>
+              <th>Dates</th>
+              <th>Status</th>
+              <th>Exhibitors</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="exhibitions-management-body">
+            <tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted);">Loading exhibitions...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Create Exhibition Modal -->
+  <div class="modal-overlay" id="create-exhibition-modal">
+    <div class="modal-content" style="max-width: 650px;">
+      <div class="modal-header">
+        <h3>Create Campus Art Exhibition</h3>
+        <button class="modal-close" onclick="closeCreateExhibitionModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Exhibition Title *</label>
+          <input type="text" id="ex-title" class="form-control" placeholder="e.g. NSBM Annual Spring Salon 2026" required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="form-group">
+            <label class="form-label">Curatorial Theme *</label>
+            <input type="text" id="ex-theme" class="form-control" placeholder="e.g. Green Futures & Biodiversity" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Campus Venue *</label>
+            <input type="text" id="ex-venue" class="form-control" placeholder="e.g. Auditorium Art Lounge, NSBM" required>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+          <div class="form-group">
+            <label class="form-label">Start Date *</label>
+            <input type="date" id="ex-start-date" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">End Date *</label>
+            <input type="date" id="ex-end-date" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Event Status *</label>
+            <select id="ex-status" class="form-control">
+              <option value="upcoming">Upcoming</option>
+              <option value="active">Active Now</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Banner Image (PNG Asset) *</label>
+          <select id="ex-banner-select" class="form-control">
+            <option value="assets/images/exhibit-1.png">Exhibition Banner 1 (assets/images/exhibit-1.png)</option>
+            <option value="assets/images/exhibit-2.png">Exhibition Banner 2 (assets/images/exhibit-2.png)</option>
+            <option value="assets/images/exhibit-3.png">Exhibition Banner 3 (assets/images/exhibit-3.png)</option>
+            <option value="assets/images/hero-banner.png">Hero Showcase Banner (assets/images/hero-banner.png)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Event Description & Rules *</label>
+          <textarea id="ex-desc" class="form-control" rows="3" placeholder="Describe exhibition objectives, eligible categories, judging criteria, and schedule..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeCreateExhibitionModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="Admin.createExhibition()">Create & Broadcast Announcement</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dynamic Application Footer -->
+  <div id="app-footer"></div>
+
+  <!-- Scripts -->
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/admin.js"></script>
+  <script>
+    function openCreateExhibitionModal() {
+      document.getElementById('create-exhibition-modal').classList.add('active');
+    }
+    function closeCreateExhibitionModal() {
+      document.getElementById('create-exhibition-modal').classList.remove('active');
+    }
+  </script>
+</body>
+</html>

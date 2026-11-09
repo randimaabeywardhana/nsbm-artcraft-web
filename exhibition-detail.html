@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exhibition Details | NSBM ArtCraft</title>
+  <link rel="stylesheet" href="assets/css/material.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- Dynamic Application Header -->
+  <header id="app-header"></header>
+
+  <main class="container" style="padding: 40px 20px;">
+    <!-- Breadcrumb -->
+    <div style="margin-bottom: 24px; font-size: 0.88rem; color: var(--text-muted);">
+      <a href="index.html">Home</a> &gt; 
+      <a href="exhibitions.html">Exhibitions</a> &gt; 
+      <span id="crumb-title" style="color: var(--nsbm-blue); font-weight: 700;">Exhibition Title</span>
+    </div>
+
+    <!-- Hero Card for Exhibition -->
+    <div class="card" style="margin-bottom: 36px; overflow: hidden;">
+      <img id="ex-banner" src="assets/images/exhibit-1.png" style="width: 100%; height: 380px; object-fit: cover;">
+      
+      <div style="padding: 36px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 16px;">
+          <div>
+            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+              <span class="chip chip-green" id="ex-status">Upcoming</span>
+              <span class="chip chip-blue" id="ex-theme">Theme</span>
+            </div>
+            <h1 id="ex-title" style="font-size: 2.1rem; font-weight: 800; color: var(--nsbm-blue); line-height: 1.2;">Exhibition Title</h1>
+          </div>
+
+          <div id="reg-action-box">
+            <button id="register-trigger-btn" class="btn btn-primary btn-lg" onclick="openRegisterModal()">
+              Register to Participate
+            </button>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; background: var(--bg-body); padding: 18px 24px; border-radius: var(--radius-md); margin-bottom: 26px; border: 1px solid var(--border-color);">
+          <div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Exhibition Dates</div>
+            <div id="ex-dates" style="font-weight: 700; color: var(--nsbm-blue); font-size: 1rem; margin-top: 4px;">Date Range</div>
+          </div>
+          <div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Showcase Venue</div>
+            <div id="ex-venue" style="font-weight: 700; color: var(--nsbm-blue); font-size: 1rem; margin-top: 4px;">Auditorium Lounge</div>
+          </div>
+          <div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Participants</div>
+            <div id="ex-participants-count" style="font-weight: 700; color: var(--nsbm-green); font-size: 1rem; margin-top: 4px;">0 Registered</div>
+          </div>
+        </div>
+
+        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--nsbm-blue); margin-bottom: 10px;">Exhibition Concept & Guidelines</h3>
+        <p id="ex-desc" style="color: var(--text-main); font-size: 1rem; line-height: 1.7;">
+          Description...
+        </p>
+      </div>
+    </div>
+
+    <!-- Participating Student Artists & Works Section -->
+    <div style="margin-bottom: 40px;">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Registered Exhibitors & Artworks</h2>
+          <p class="section-subtitle">Student artists confirmed to showcase their items at this exhibition</p>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px;" id="participants-grid">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal for Registration -->
+  <div class="modal-overlay" id="reg-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Register for Exhibition</h3>
+        <button class="modal-close" onclick="closeRegisterModal()">&times;</button>
+      </div>
+      <form id="exhibition-reg-form" onsubmit="handleRegistrationSubmit(event)">
+        <div class="modal-body">
+          <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 20px;">
+            Select which of your approved artworks you would like to display at this exhibition, or submit general participation.
+          </p>
+
+          <div class="form-group">
+            <label class="form-label">Select Artwork to Exhibit (Optional)</label>
+            <select id="user-artwork-select" class="form-control">
+              <option value="">-- General Exhibition / Live Demo --</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Exhibition Display Notes / Space Requirements</label>
+            <textarea id="reg-notes" class="form-control" rows="3" placeholder="e.g. Easel required, table for ceramics, wall hanging space..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeRegisterModal()">Cancel</button>
+          <button type="submit" id="submit-reg-btn" class="btn btn-primary">Confirm Registration</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Dynamic Application Footer -->
+  <div id="app-footer"></div>
+
+  <!-- Scripts -->
+  <script src="assets/js/app.js"></script>
+  <script>
+    let exhibitionId = 0;
+    let currentExhibition = null;
+
+    async function init() {
+      const urlParams = new URLSearchParams(window.location.search);
+      exhibitionId = parseInt(urlParams.get('id') || 0);
+
+      if (!exhibitionId) {
+        window.location.href = 'exhibitions.html';
+        return;
+      }
+
+      await loadExhibitionDetails();
+    }
+
+    async function loadExhibitionDetails() {
+      try {
+        const res = await fetch(`api/exhibitions.php?action=detail&id=${exhibitionId}`);
+        const data = await res.json();
+        if (data.status === 'success') {
+          currentExhibition = data.data.exhibition;
+          const participants = data.data.participants || [];
+          renderExhibition(currentExhibition, participants);
+        } else {
+          App.showToast(data.message || 'Exhibition not found.', 'error');
+          setTimeout(() => { window.location.href = 'exhibitions.html'; }, 1500);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function renderExhibition(ex, participants) {
+      document.title = `${ex.title} | NSBM ArtCraft`;
+      document.getElementById('crumb-title').textContent = ex.title;
+      document.getElementById('ex-banner').src = ex.banner_image;
+      document.getElementById('ex-title').textContent = ex.title;
+      document.getElementById('ex-theme').textContent = `Theme: ${ex.theme}`;
+      document.getElementById('ex-status').textContent = ex.status.toUpperCase();
+      document.getElementById('ex-dates').textContent = `${ex.start_date} to ${ex.end_date}`;
+      document.getElementById('ex-venue').textContent = ex.venue;
+      document.getElementById('ex-desc').textContent = ex.description;
+      document.getElementById('ex-participants-count').textContent = `${participants.length} Student Artists`;
+
+      // Update register button
+      const regBox = document.getElementById('reg-action-box');
+      if (ex.is_registered) {
+        regBox.innerHTML = `
+          <button class="btn btn-secondary btn-lg" disabled>
+            ✓ You are Registered
+          </button>
+        `;
+      }
+
+      // Render participants
+      const pGrid = document.getElementById('participants-grid');
+      if (participants.length === 0) {
+        pGrid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 40px; background: #fff; border-radius: var(--radius-md); border: 1px dashed var(--border-color);">
+            <p style="color: var(--text-muted); font-size: 0.95rem;">No student artists have registered for this exhibition yet. Be the first to participate!</p>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      participants.forEach(p => {
+        html += `
+          <div class="card" style="padding: 18px;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+              <img src="${p.user_avatar || 'assets/images/avatar-default.png'}" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--nsbm-green);">
+              <div>
+                <a href="artist-profile.html?id=${p.user_id}" style="font-weight: 700; color: var(--nsbm-blue); font-size: 0.95rem;">${p.user_name}</a>
+                <div style="font-size: 0.78rem; color: var(--text-muted);">${p.user_faculty}</div>
+              </div>
+            </div>
+
+            ${p.artwork_title ? `
+              <div style="background: var(--bg-body); border-radius: var(--radius-sm); padding: 10px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--border-color);">
+                <img src="${p.artwork_image}" style="width: 48px; height: 48px; border-radius: 4px; object-fit: cover;">
+                <div style="flex: 1; overflow: hidden;">
+                  <a href="artwork-detail.html?id=${p.artwork_id}" style="font-weight: 700; font-size: 0.85rem; color: var(--nsbm-blue); display: block; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${p.artwork_title}</a>
+                  <span style="font-size: 0.75rem; color: var(--text-muted);">${p.artwork_medium}</span>
+                </div>
+              </div>
+            ` : `
+              <div style="background: var(--bg-body); padding: 10px; border-radius: var(--radius-sm); font-size: 0.82rem; color: var(--text-muted);">
+                General Exhibitor / Live Art Demonstration
+              </div>
+            `}
+
+            ${p.notes ? `
+              <div style="margin-top: 10px; font-size: 0.78rem; color: var(--text-muted); font-style: italic;">
+                "${p.notes}"
+              </div>
+            ` : ''}
+          </div>
+        `;
+      });
+      pGrid.innerHTML = html;
+    }
+
+    async function openRegisterModal() {
+      const user = App.getUser();
+      if (!user) {
+        App.showToast('Please login to register for this exhibition.', 'warning');
+        setTimeout(() => { window.location.href = 'login.html'; }, 1000);
+        return;
+      }
+
+      // Populate user's approved artworks in select
+      try {
+        const res = await fetch('api/artworks.php?action=list&status=my');
+        const data = await res.json();
+        const sel = document.getElementById('user-artwork-select');
+        sel.innerHTML = '<option value="">-- General Exhibition / Live Demo --</option>';
+
+        if (data.status === 'success') {
+          (data.data.artworks || []).forEach(art => {
+            if (art.status === 'approved') {
+              sel.innerHTML += `<option value="${art.id}">${art.title} (${art.medium})</option>`;
+            }
+          });
+        }
+      } catch (e) {
+        console.error(e);
+      }
+
+      document.getElementById('reg-modal').classList.add('active');
+    }
+
+    function closeRegisterModal() {
+      document.getElementById('reg-modal').classList.remove('active');
+    }
+
+    async function handleRegistrationSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submit-reg-btn');
+      btn.disabled = true;
+
+      const artId = document.getElementById('user-artwork-select').value;
+      const notes = document.getElementById('reg-notes').value.trim();
+
+      try {
+        const res = await fetch('api/exhibitions.php?action=register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            exhibition_id: exhibitionId,
+            artwork_id: artId ? parseInt(artId) : null,
+            notes: notes
+          })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          App.showToast('Registration successful! Confirmation notification sent.', 'success');
+          closeRegisterModal();
+          loadExhibitionDetails();
+        } else {
+          App.showToast(data.message, 'error');
+        }
+      } catch (err) {
+        App.showToast('Registration request failed.', 'error');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

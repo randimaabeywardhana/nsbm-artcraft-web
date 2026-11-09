@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Art Exhibitions & Showcases | NSBM ArtCraft</title>
+  <link rel="stylesheet" href="assets/css/material.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- Dynamic Application Header -->
+  <header id="app-header"></header>
+
+  <!-- Banner -->
+  <div style="background: var(--nsbm-blue); color: #fff; padding: 45px 0 35px; border-bottom: 3px solid var(--nsbm-green);">
+    <div class="container">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+        <div>
+          <h1 style="font-size: 2.2rem; font-weight: 800;">Campus Showcases & Exhibitions</h1>
+          <p style="color: #CBD5E1; font-size: 1rem; margin-top: 4px;">Participate in campus-wide exhibitions, cultural vernissages, and tech-art expos</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="container" style="padding: 40px 20px;">
+    <!-- Filter Tabs -->
+    <div style="display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap;">
+      <button class="cat-tab active" onclick="filterExhibitions('', this)">All Events</button>
+      <button class="cat-tab" onclick="filterExhibitions('active', this)">Active Now</button>
+      <button class="cat-tab" onclick="filterExhibitions('upcoming', this)">Upcoming</button>
+      <button class="cat-tab" onclick="filterExhibitions('completed', this)">Past Showcases</button>
+    </div>
+
+    <!-- Exhibitions Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 28px;" id="exhibitions-grid">
+      <!-- Loaded dynamically -->
+    </div>
+  </main>
+
+  <!-- Dynamic Application Footer -->
+  <div id="app-footer"></div>
+
+  <!-- Scripts -->
+  <script src="assets/js/app.js"></script>
+  <script>
+    let allExhibitions = [];
+
+    async function loadExhibitions(status = '') {
+      const grid = document.getElementById('exhibitions-grid');
+      if (!grid) return;
+
+      grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">Loading exhibitions...</div>';
+
+      try {
+        let url = 'api/exhibitions.php?action=list';
+        if (status) url += `&status=${status}`;
+
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.status === 'success') {
+          allExhibitions = data.data.exhibitions || [];
+          renderExhibitions(allExhibitions, grid);
+        } else {
+          grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: var(--color-danger); padding: 30px;">${data.message}</div>`;
+        }
+      } catch (e) {
+        grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: var(--color-danger); padding: 30px;">Failed to load events.</div>';
+      }
+    }
+
+    function renderExhibitions(list, container) {
+      if (list.length === 0) {
+        container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted); background: #fff; border-radius: 8px;">No exhibitions found matching this filter.</div>';
+        return;
+      }
+
+      let html = '';
+      list.forEach(ex => {
+        let statusBadge = '<span class="chip chip-blue">Upcoming</span>';
+        if (ex.status === 'active') statusBadge = '<span class="chip chip-green">Active Now 🔴</span>';
+        if (ex.status === 'completed') statusBadge = '<span class="chip">Completed</span>';
+
+        html += `
+          <div class="exhibit-card">
+            <img src="${ex.banner_image}" class="exhibit-banner" alt="${ex.title}">
+            <div class="exhibit-content">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 0.8rem; font-weight: 700; color: var(--nsbm-green);">📅 ${ex.start_date} &bull; ${ex.end_date}</span>
+                ${statusBadge}
+              </div>
+
+              <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--nsbm-blue); margin-bottom: 6px; line-height: 1.3;">${ex.title}</h2>
+              <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 12px;">Theme: ${ex.theme}</div>
+
+              <p style="font-size: 0.88rem; color: var(--text-main); line-height: 1.5; margin-bottom: 20px; flex: 1;">
+                ${ex.description.length > 120 ? ex.description.substring(0, 120) + '...' : ex.description}
+              </p>
+
+              <div style="border-top: 1px solid var(--border-color); padding-top: 14px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted);">🏛 ${ex.venue}</div>
+                  <div style="font-size: 0.78rem; font-weight: 700; color: var(--nsbm-green); margin-top: 2px;">
+                    👥 ${ex.participants_count} Artists Registered
+                  </div>
+                </div>
+
+                <a href="exhibition-detail.html?id=${ex.id}" class="btn btn-outline btn-sm">
+                  ${ex.is_registered ? '✓ View (Registered)' : 'View & Register'}
+                </a>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    function filterExhibitions(status, btn) {
+      document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      loadExhibitions(status);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => loadExhibitions(''));
+  </script>
+</body>
+</html>

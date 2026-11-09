@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Categories | NSBM ArtCraft Admin</title>
+  <link rel="stylesheet" href="assets/css/material.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- Dynamic Application Header -->
+  <header id="app-header"></header>
+
+  <!-- Admin Subheader -->
+  <div style="background: var(--nsbm-blue-dark); color: #fff; padding: 25px 0; border-bottom: 3px solid var(--nsbm-green);">
+    <div class="container">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <a href="admin-dashboard.html" style="color: #CBD5E1; font-size: 0.9rem;">&larr; Admin Dashboard</a>
+          <span style="color: #64748B;">/</span>
+          <h1 style="font-size: 1.5rem; font-weight: 800; margin: 0;">Art & Craft Categories</h1>
+        </div>
+
+        <button class="btn btn-primary btn-sm" onclick="openCreateCategoryModal()">
+          + Add New Category
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <main class="container" style="padding: 40px 20px;">
+    <div class="data-table-card" id="categories-management-table">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Icon</th>
+              <th>Category Name</th>
+              <th>Slug</th>
+              <th>Description</th>
+              <th>Approved Artworks</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="categories-management-body">
+            <tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">Loading categories...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Create Category Modal -->
+  <div class="modal-overlay" id="create-category-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Create New Art Category</h3>
+        <button class="modal-close" onclick="closeCreateCategoryModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Category Name *</label>
+          <input type="text" id="cat-name-input" class="form-control" placeholder="e.g. Calligraphy & Lettering" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Category Icon / Banner (PNG) *</label>
+          <select id="cat-icon-select" class="form-control">
+            <option value="assets/images/cat-painting.png">Painting Thumbnail (cat-painting.png)</option>
+            <option value="assets/images/cat-sketching.png">Sketching Thumbnail (cat-sketching.png)</option>
+            <option value="assets/images/cat-handcraft.png">Handcraft Thumbnail (cat-handcraft.png)</option>
+            <option value="assets/images/cat-digital.png">Digital Art Thumbnail (cat-digital.png)</option>
+            <option value="assets/images/cat-sculpture.png">Sculpture Thumbnail (cat-sculpture.png)</option>
+            <option value="assets/images/cat-photography.png">Photography Thumbnail (cat-photography.png)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Category Description</label>
+          <textarea id="cat-desc-input" class="form-control" rows="3" placeholder="Brief summary of what kind of student artworks belong to this category..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeCreateCategoryModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="Admin.createCategory()">Create Category</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dynamic Application Footer -->
+  <div id="app-footer"></div>
+
+  <!-- Scripts -->
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/admin.js"></script>
+  <script>
+    function openCreateCategoryModal() {
+      document.getElementById('create-category-modal').classList.add('active');
+    }
+    function closeCreateCategoryModal() {
+      document.getElementById('create-category-modal').classList.remove('active');
+    }
+  </script>
+</body>
+</html>

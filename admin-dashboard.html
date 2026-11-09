@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | NSBM ArtCraft</title>
+  <link rel="stylesheet" href="assets/css/material.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- Dynamic Application Header -->
+  <header id="app-header"></header>
+
+  <!-- Admin Subheader -->
+  <div style="background: var(--nsbm-blue-dark); color: #fff; padding: 25px 0; border-bottom: 3px solid var(--nsbm-green);">
+    <div class="container">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="background: #EF4444; color: #fff; font-size: 0.75rem; font-weight: 800; padding: 4px 10px; border-radius: 4px; text-transform: uppercase;">Admin Portal</span>
+          <h1 style="font-size: 1.6rem; font-weight: 800; margin: 0;">Curator Management Dashboard</h1>
+        </div>
+
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <a href="admin-artworks.html" class="btn btn-outline btn-sm" style="color: #fff; border-color: #fff;">Moderate Artworks</a>
+          <a href="admin-categories.html" class="btn btn-outline btn-sm" style="color: #fff; border-color: #fff;">Categories</a>
+          <a href="admin-exhibitions.html" class="btn btn-outline btn-sm" style="color: #fff; border-color: #fff;">Exhibitions</a>
+          <a href="admin-reports.html" class="btn btn-primary btn-sm">Reports & CSV</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="container" style="padding: 40px 20px;">
+    <!-- KPI Metric Cards Grid -->
+    <div class="admin-metrics-grid" id="admin-summary-grid">
+      <div class="metric-card">
+        <div class="metric-icon green">🎨</div>
+        <div class="metric-info">
+          <h3 id="metric-total-art">0</h3>
+          <p>Total Artworks</p>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon blue">✓</div>
+        <div class="metric-info">
+          <h3 id="metric-approved-art">0</h3>
+          <p>Approved & Live</p>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon yellow">⏳</div>
+        <div class="metric-info">
+          <h3 id="metric-pending-art">0</h3>
+          <p>Pending Review</p>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon green">👥</div>
+        <div class="metric-info">
+          <h3 id="metric-students">0</h3>
+          <p>Registered Students</p>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon blue">👁</div>
+        <div class="metric-info">
+          <h3 id="metric-views">0</h3>
+          <p>Total Views</p>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon red">❤️</div>
+        <div class="metric-info">
+          <h3 id="metric-likes">0</h3>
+          <p>Community Likes</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pending Review Queue Section -->
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Submissions Requiring Curator Review</h2>
+        <p class="section-subtitle">Approve submissions or request revisions with direct student feedback</p>
+      </div>
+      <a href="admin-artworks.html" class="btn btn-outline btn-sm">View All Artworks &rarr;</a>
+    </div>
+
+    <div class="data-table-card">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Preview</th>
+              <th>Artwork Details</th>
+              <th>Student Submitter</th>
+              <th>Status</th>
+              <th>Submission Date</th>
+              <th>Curator Actions</th>
+            </tr>
+          </thead>
+          <tbody id="pending-queue-body">
+            <tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">Loading pending queue...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Rejection Feedback Modal -->
+  <div class="modal-overlay" id="reject-modal">
+    <div class="modal-content">
+      <div class="modal-header" style="background: var(--color-danger);">
+        <h3>Request Revision / Reject Submission</h3>
+        <button class="modal-close" onclick="Admin.closeRejectModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px;">
+          Provide a constructive reason or revision instructions for the student creator. This note will appear on their dashboard and notification center.
+        </p>
+        <div class="form-group">
+          <label class="form-label">Curator Feedback Note *</label>
+          <textarea id="reject-reason-input" class="form-control" rows="4" placeholder="e.g. Please re-upload a higher resolution PNG image without flash glare along the bottom edge..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="Admin.closeRejectModal()">Cancel</button>
+        <button type="button" class="btn btn-danger" onclick="Admin.confirmReject()">Submit Feedback & Reject</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dynamic Application Footer -->
+  <div id="app-footer"></div>
+
+  <!-- Scripts -->
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>

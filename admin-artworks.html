@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Artworks | NSBM ArtCraft Admin</title>
+  <link rel="stylesheet" href="assets/css/material.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- Dynamic Application Header -->
+  <header id="app-header"></header>
+
+  <!-- Admin Subheader -->
+  <div style="background: var(--nsbm-blue-dark); color: #fff; padding: 25px 0; border-bottom: 3px solid var(--nsbm-green);">
+    <div class="container">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <a href="admin-dashboard.html" style="color: #CBD5E1; font-size: 0.9rem;">&larr; Admin Dashboard</a>
+          <span style="color: #64748B;">/</span>
+          <h1 style="font-size: 1.5rem; font-weight: 800; margin: 0;">Artwork Moderation & Management</h1>
+        </div>
+
+        <div style="display: flex; gap: 8px;">
+          <a href="upload-artwork.html" class="btn btn-primary btn-sm">+ Add Artwork</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="container" style="padding: 40px 20px;">
+    <!-- Data Table Card -->
+    <div class="data-table-card" id="artworks-management-table">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Preview</th>
+              <th>Artwork Title & Category</th>
+              <th>Artist</th>
+              <th>Status</th>
+              <th>Feature on Home</th>
+              <th>Engagement</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="artworks-management-body">
+            <tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted);">Loading all artworks...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Rejection Modal -->
+  <div class="modal-overlay" id="reject-modal">
+    <div class="modal-content">
+      <div class="modal-header" style="background: var(--color-danger);">
+        <h3>Request Revision / Reject Submission</h3>
+        <button class="modal-close" onclick="Admin.closeRejectModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px;">
+          Specify the reason why this artwork requires revision. The student will be notified immediately.
+        </p>
+        <div class="form-group">
+          <label class="form-label">Reason / Feedback Note *</label>
+          <textarea id="reject-reason-input" class="form-control" rows="4" placeholder="e.g. Please crop the white edges and re-upload..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="Admin.closeRejectModal()">Cancel</button>
+        <button type="button" class="btn btn-danger" onclick="Admin.confirmReject()">Confirm Rejection</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dynamic Application Footer -->
+  <div id="app-footer"></div>
+
+  <!-- Scripts -->
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>
