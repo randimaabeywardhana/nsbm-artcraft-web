@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submit Artwork | NSBM ArtCraft</title>
+  <link rel="stylesheet" href="assets/css/material.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- Dynamic Application Header -->
+  <header id="app-header"></header>
+
+  <!-- Page Banner -->
+  <div style="background: var(--nsbm-blue); color: #fff; padding: 40px 0 30px; border-bottom: 3px solid var(--nsbm-green);">
+    <div class="container">
+      <h1 style="font-size: 2.1rem; font-weight: 800;">Submit Artwork for Showcase</h1>
+      <p style="color: #CBD5E1; font-size: 0.98rem; margin-top: 4px;">Share your creative talent with the NSBM Green University community</p>
+    </div>
+  </div>
+
+  <main class="container" style="padding: 40px 20px; max-width: 900px;">
+    <div class="card" style="padding: 36px; box-shadow: var(--shadow-card);">
+      
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 26px; padding-bottom: 18px; border-bottom: 1px solid var(--border-color);">
+        <div style="width: 44px; height: 44px; background: var(--nsbm-green-subtle); color: var(--nsbm-green); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
+          🎨
+        </div>
+        <div>
+          <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--nsbm-blue);">Art & Handcraft Submission Form</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Please provide accurate details. Artwork images must be uploaded in PNG format.</p>
+        </div>
+      </div>
+
+      <form id="artwork-upload-form">
+        <!-- PNG Image Upload Drag & Drop Area -->
+        <div class="form-group">
+          <label class="form-label">Artwork Photograph / Render (PNG Format) *</label>
+          
+          <div id="drop-zone" style="border: 2px dashed var(--border-color); border-radius: var(--radius-md); padding: 36px 20px; text-align: center; cursor: pointer; transition: all 0.2s; background: #FAFBFD;">
+            <input type="file" id="artwork-file" accept="image/png" style="display: none;">
+            <div style="font-size: 2.5rem; margin-bottom: 10px;">🖼️</div>
+            <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--nsbm-blue); margin-bottom: 6px;">
+              Click to select or drag & drop a PNG image here
+            </h4>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 10px;">
+              Direct PNG files only (.png) &bull; Maximum file size: 10 MB
+            </p>
+            <span class="btn btn-outline btn-sm">Browse Local Files</span>
+          </div>
+
+          <!-- Preview Area -->
+          <div id="preview-container" style="display: none; margin-top: 18px; padding: 14px; background: #F1F5F9; border-radius: var(--radius-md); text-align: center;">
+            <img id="preview-img" src="" alt="Preview" style="max-height: 260px; max-width: 100%; border-radius: 6px; box-shadow: var(--shadow-sm); object-fit: contain;">
+            <div style="margin-top: 10px; font-size: 0.82rem; font-weight: 600; color: var(--nsbm-green);" id="file-name-label"></div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <!-- Title -->
+          <div class="form-group">
+            <label class="form-label" for="title-input">Artwork Title *</label>
+            <input type="text" id="title-input" class="form-control" placeholder="e.g. Whispers of Sinharaja Rainforest" required>
+          </div>
+
+          <!-- Category -->
+          <div class="form-group">
+            <label class="form-label" for="category-select">Category *</label>
+            <select id="category-select" class="form-control" required>
+              <option value="">Loading categories...</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <!-- Medium -->
+          <div class="form-group">
+            <label class="form-label" for="medium-input">Artistic Medium *</label>
+            <input type="text" id="medium-input" class="form-control" placeholder="e.g. Acrylic on Canvas, Kaduru Wood, Graphite" required>
+          </div>
+
+          <!-- Dimensions -->
+          <div class="form-group">
+            <label class="form-label" for="dimensions-input">Physical Dimensions / Resolution</label>
+            <input type="text" id="dimensions-input" class="form-control" placeholder="e.g. 24 x 36 inches, A3, 30 x 15 cm">
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label class="form-label" for="description-input">Artist Description & Concept *</label>
+          <textarea id="description-input" class="form-control" rows="4" placeholder="Describe the creative inspiration, technique, symbolism, or cultural background behind your artwork..." required></textarea>
+        </div>
+
+        <!-- Submission Notice -->
+        <div style="background: var(--nsbm-green-subtle); padding: 16px 20px; border-radius: var(--radius-sm); border-left: 4px solid var(--nsbm-green); margin-bottom: 24px;">
+          <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--nsbm-green-dark); margin-bottom: 4px;">Curator Moderation Notice</h4>
+          <p style="font-size: 0.82rem; color: var(--nsbm-blue); line-height: 1.4;">
+            All student submissions are reviewed by the NSBM Faculty Art Curators before appearing in the public gallery. You will receive an instant notification once your artwork is reviewed.
+          </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="display: flex; justify-content: flex-end; gap: 14px;">
+          <a href="gallery.html" class="btn btn-outline">Cancel</a>
+          <button type="submit" id="submit-btn" class="btn btn-primary btn-lg">Submit Artwork for Showcase</button>
+        </div>
+      </form>
+
+    </div>
+  </main>
+
+  <!-- Dynamic Application Footer -->
+  <div id="app-footer"></div>
+
+  <!-- Scripts -->
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/upload.js"></script>
+</body>
+</html>

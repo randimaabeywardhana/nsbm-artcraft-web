@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Art & Craft Gallery | NSBM ArtCraft</title>
+  <link rel="stylesheet" href="assets/css/material.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- Dynamic Application Header -->
+  <header id="app-header"></header>
+
+  <!-- Page Header -->
+  <div style="background: var(--nsbm-blue); color: #fff; padding: 45px 0 35px; border-bottom: 3px solid var(--nsbm-green);">
+    <div class="container">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+        <div>
+          <h1 style="font-size: 2.2rem; font-weight: 800; letter-spacing: -0.5px;">Student Art & Craft Gallery</h1>
+          <p style="color: #CBD5E1; font-size: 1rem; margin-top: 4px;">Explore curated handcrafts, illustrations, oil paintings, and student exhibitions</p>
+        </div>
+        <a href="upload-artwork.html" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Upload Artwork
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <main class="container" style="padding: 40px 20px;">
+    <!-- Gallery Filter & Search Bar -->
+    <div class="gallery-filters">
+      <div class="filter-row">
+        <div class="search-box">
+          <span class="icon">🔍</span>
+          <input type="text" id="gallery-search" class="form-control" placeholder="Search by title, artist, medium, or keywords..." oninput="Gallery.handleSearch(this.value)">
+        </div>
+
+        <div style="min-width: 200px;">
+          <select id="gallery-sort" class="form-control" onchange="Gallery.handleSort(this.value)">
+            <option value="newest">Sort: Newest Submissions</option>
+            <option value="rating">Sort: Highest Rated</option>
+            <option value="likes">Sort: Most Liked</option>
+            <option value="views">Sort: Most Viewed</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Categories Pill Bar -->
+      <div class="category-tabs" id="category-tabs-container" style="margin-top: 14px;">
+        <!-- Loaded dynamically -->
+      </div>
+    </div>
+
+    <!-- Artworks Grid -->
+    <div class="art-grid" id="artworks-grid">
+      <!-- Loaded dynamically -->
+    </div>
+  </main>
+
+  <!-- Dynamic Application Footer -->
+  <div id="app-footer"></div>
+
+  <!-- Scripts -->
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/gallery.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      Gallery.loadCategories('category-tabs-container');
+      Gallery.loadArtworks('artworks-grid');
+    });
+  </script>
+</body>
+</html>

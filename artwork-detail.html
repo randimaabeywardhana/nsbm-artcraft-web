@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artwork Details | NSBM ArtCraft</title>
+  <link rel="stylesheet" href="assets/css/material.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- Dynamic Application Header -->
+  <header id="app-header"></header>
+
+  <main class="container" style="padding: 40px 20px;">
+    <!-- Breadcrumb -->
+    <div style="margin-bottom: 24px; font-size: 0.88rem; color: var(--text-muted);">
+      <a href="index.html">Home</a> &gt; 
+      <a href="gallery.html">Gallery</a> &gt; 
+      <span id="crumb-category">Category</span> &gt; 
+      <span id="crumb-title" style="color: var(--nsbm-blue); font-weight: 700;">Artwork Title</span>
+    </div>
+
+    <div class="detail-layout">
+      <!-- Left: High-Res PNG Image Box -->
+      <div>
+        <div class="detail-img-box">
+          <img id="detail-image" src="assets/images/hero-banner.png" alt="Artwork Image">
+        </div>
+
+        <!-- Social Action Bar -->
+        <div style="display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 18px 24px; border-radius: var(--radius-md); margin-top: 20px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); flex-wrap: wrap; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <button id="like-btn" class="btn btn-outline btn-sm" onclick="ArtworkDetail.toggleLike()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+              <span id="detail-like-text">Like Artwork</span> (<span id="detail-like-count">0</span>)
+            </button>
+
+            <button class="btn btn-outline-blue btn-sm" onclick="ArtworkDetail.copyShareLink()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+              Share Link
+            </button>
+          </div>
+
+          <div style="font-size: 0.85rem; color: var(--text-muted);">
+            👁 <span id="detail-views">0</span> Campus Impressions
+          </div>
+        </div>
+
+        <!-- Community Comments Section -->
+        <div style="background: #fff; border-radius: var(--radius-md); border: 1px solid var(--border-color); padding: 26px; margin-top: 24px; box-shadow: var(--shadow-sm);">
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--nsbm-blue); margin-bottom: 20px;">
+            Art Criticism & Feedback (<span id="comments-count">0</span>)
+          </h3>
+
+          <!-- Post Comment Form -->
+          <form id="comment-form" onsubmit="ArtworkDetail.postComment(event)" style="margin-bottom: 28px;">
+            <div class="form-group">
+              <textarea id="comment-input" class="form-control" rows="3" placeholder="Leave constructive artistic feedback or appreciation for the student creator..." required></textarea>
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+              <button type="submit" id="comment-submit-btn" class="btn btn-primary btn-sm">Post Comment</button>
+            </div>
+          </form>
+
+          <!-- Comments Feed -->
+          <div id="comments-list" style="display: flex; flex-direction: column; gap: 16px;">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Artwork Metadata & Artist Profile -->
+      <div>
+        <div class="detail-info-card">
+          <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+            <span class="chip chip-green" id="detail-category">Painting</span>
+            <span class="chip chip-blue" id="detail-medium">Medium</span>
+            <span class="chip" id="detail-dimensions">Dimensions</span>
+          </div>
+
+          <h1 id="detail-title" style="font-size: 1.85rem; font-weight: 800; color: var(--nsbm-blue); line-height: 1.25; margin-bottom: 16px;">Artwork Title</h1>
+
+          <p id="detail-description" style="color: var(--text-muted); font-size: 0.98rem; line-height: 1.7; margin-bottom: 26px;">
+            Artwork description...
+          </p>
+
+          <!-- 5-Star Interactive Rating Widget -->
+          <div style="background: var(--bg-body); padding: 18px 20px; border-radius: var(--radius-md); margin-bottom: 26px; border: 1px solid var(--border-color);">
+            <div style="font-size: 0.88rem; font-weight: 700; color: var(--nsbm-blue); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+              <span>Community Rating</span>
+              <span style="color: var(--color-gold); font-size: 1.05rem;" id="detail-avg-rating">★ 5.0 / 5.0</span>
+            </div>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px;">Based on <span id="detail-ratings-count">0</span> student & faculty reviews</p>
+            
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-size: 0.82rem; font-weight: 600;">Rate this creation:</span>
+              <div class="star-rating-input">
+                <input type="radio" id="star5" name="user-rating" value="5" onclick="ArtworkDetail.submitRating(5)"><label for="star5" title="5 Stars">★</label>
+                <input type="radio" id="star4" name="user-rating" value="4" onclick="ArtworkDetail.submitRating(4)"><label for="star4" title="4 Stars">★</label>
+                <input type="radio" id="star3" name="user-rating" value="3" onclick="ArtworkDetail.submitRating(3)"><label for="star3" title="3 Stars">★</label>
+                <input type="radio" id="star2" name="user-rating" value="2" onclick="ArtworkDetail.submitRating(2)"><label for="star2" title="2 Stars">★</label>
+                <input type="radio" id="star1" name="user-rating" value="1" onclick="ArtworkDetail.submitRating(1)"><label for="star1" title="1 Star">★</label>
+              </div>
+            </div>
+            <div id="my-rating-feedback" style="font-size: 0.78rem; color: var(--nsbm-green); margin-top: 6px; font-weight: 600;"></div>
+          </div>
+
+          <!-- Student Creator Box -->
+          <div style="border-top: 1px solid var(--border-color); padding-top: 24px;">
+            <div style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; letter-spacing: 0.5px;">About the Creator</div>
+            
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 14px;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <img id="artist-avatar" src="assets/images/avatar-default.png" style="width: 50px; height: 50px; border-radius: var(--radius-full); object-fit: cover; border: 2px solid var(--nsbm-green);">
+                <div>
+                  <a id="artist-name-link" href="#" style="font-size: 1.05rem; font-weight: 700; color: var(--nsbm-blue);">Artist Name</a>
+                  <div id="artist-faculty" style="font-size: 0.8rem; color: var(--text-muted);">Faculty of Computing</div>
+                </div>
+              </div>
+
+              <button id="follow-btn" class="btn btn-outline btn-sm" onclick="ArtworkDetail.toggleFollow()">
+                + Follow
+              </button>
+            </div>
+
+            <p id="artist-bio" style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
+              Student artist biography...
+            </p>
+
+            <a id="artist-portfolio-btn" href="#" class="btn btn-outline-blue btn-sm" style="width: 100%;">
+              View Full Student Portfolio &rarr;
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Dynamic Application Footer -->
+  <div id="app-footer"></div>
+
+  <!-- Scripts -->
+  <script src="assets/js/app.js"></script>
+  <script>
+    const ArtworkDetail = (function() {
+      let currentArtwork = null;
+      let artworkId = 0;
+
+      async function init() {
+        const urlParams = new URLSearchParams(window.location.search);
+        artworkId = parseInt(urlParams.get('id') || 0);
+
+        if (!artworkId) {
+          window.location.href = 'gallery.html';
+          return;
+        }
+
+        await loadDetails();
+      }
+
+      async function loadDetails() {
+        try {
+          const res = await fetch(`api/artworks.php?action=detail&id=${artworkId}`);
+          const data = await res.json();
+          if (data.status === 'success') {
+            currentArtwork = data.data.artwork;
+            const comments = data.data.comments || [];
+            renderDetails(currentArtwork, comments);
+          } else {
+            App.showToast(data.message || 'Artwork not found.', 'error');
+            setTimeout(() => { window.location.href = 'gallery.html'; }, 1500);
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      function renderDetails(art, comments) {
+        document.title = `${art.title} | NSBM ArtCraft`;
+
+        document.getElementById('crumb-category').textContent = art.category_name;
+        document.getElementById('crumb-title').textContent = art.title;
+
+        document.getElementById('detail-image').src = art.image_path;
+        document.getElementById('detail-title').textContent = art.title;
+        document.getElementById('detail-description').textContent = art.description;
+        document.getElementById('detail-category').textContent = art.category_name;
+        document.getElementById('detail-medium').textContent = art.medium;
+        document.getElementById('detail-dimensions').textContent = art.dimensions || 'N/A';
+        document.getElementById('detail-views').textContent = art.views_count;
+
+        document.getElementById('detail-like-count').textContent = art.likes_count;
+        updateLikeBtn(art.is_liked);
+
+        document.getElementById('detail-avg-rating').textContent = `★ ${Number(art.avg_rating).toFixed(1)} / 5.0`;
+        document.getElementById('detail-ratings-count').textContent = art.ratings_count;
+
+        // Check if user already rated
+        if (art.my_rating > 0) {
+          const rad = document.getElementById(`star${art.my_rating}`);
+          if (rad) rad.checked = true;
+          document.getElementById('my-rating-feedback').textContent = `You rated this ${art.my_rating} stars.`;
+        }
+
+        // Artist details
+        document.getElementById('artist-name-link').textContent = art.artist_name;
+        document.getElementById('artist-name-link').href = `artist-profile.html?id=${art.user_id}`;
+        document.getElementById('artist-portfolio-btn').href = `artist-profile.html?id=${art.user_id}`;
+        document.getElementById('artist-faculty').textContent = `${art.artist_faculty} (${art.artist_student_id || 'Student'})`;
+        document.getElementById('artist-avatar').src = art.artist_avatar || 'assets/images/avatar-default.png';
+        document.getElementById('artist-bio').textContent = art.artist_bio || 'Student creator at NSBM Green University.';
+
+        updateFollowBtn(art.is_following_artist);
+
+        // Render comments
+        renderComments(comments);
+      }
+
+      function updateLikeBtn(isLiked) {
+        const btn = document.getElementById('like-btn');
+        const text = document.getElementById('detail-like-text');
+        const svg = btn.querySelector('svg');
+
+        if (isLiked) {
+          btn.classList.add('liked');
+          btn.style.borderColor = 'var(--color-danger)';
+          btn.style.color = 'var(--color-danger)';
+          svg.setAttribute('fill', 'currentColor');
+          text.textContent = 'Liked';
+        } else {
+          btn.classList.remove('liked');
+          btn.style.borderColor = 'var(--nsbm-green)';
+          btn.style.color = 'var(--nsbm-green)';
+          svg.setAttribute('fill', 'none');
+          text.textContent = 'Like Artwork';
+        }
+      }
+
+      function updateFollowBtn(isFollowing) {
+        const btn = document.getElementById('follow-btn');
+        if (isFollowing) {
+          btn.className = 'btn btn-primary btn-sm';
+          btn.textContent = '✓ Following';
+        } else {
+          btn.className = 'btn btn-outline btn-sm';
+          btn.textContent = '+ Follow';
+        }
+      }
+
+      function renderComments(comments) {
+        const list = document.getElementById('comments-list');
+        const countSpan = document.getElementById('comments-count');
+        countSpan.textContent = comments.length;
+
+        if (comments.length === 0) {
+          list.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 0.88rem; padding: 20px;">No comments yet. Be the first to share your artistic thoughts!</div>`;
+          return;
+        }
+
+        let html = '';
+        comments.forEach(c => {
+          html += `
+            <div style="display: flex; gap: 14px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color);">
+              <img src="${c.user_avatar || 'assets/images/avatar-default.png'}" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover;">
+              <div style="flex: 1;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                  <strong style="color: var(--nsbm-blue); font-size: 0.9rem;">${c.user_name}</strong>
+                  <span style="font-size: 0.72rem; color: var(--text-light);">${c.created_at}</span>
+                </div>
+                <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 6px;">${c.user_faculty || 'NSBM Community'}</div>
+                <p style="font-size: 0.88rem; color: var(--text-main); line-height: 1.5;">${c.comment}</p>
+              </div>
+            </div>
+          `;
+        });
+        list.innerHTML = html;
+      }
+
+      async function toggleLike() {
+        const user = App.getUser();
+        if (!user) {
+          App.showToast('Please login to like this artwork.', 'warning');
+          setTimeout(() => { window.location.href = 'login.html'; }, 1000);
+          return;
+        }
+
+        try {
+          const res = await fetch('api/interactions.php?action=like_toggle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ artwork_id: artworkId })
+          });
+          const data = await res.json();
+          if (data.status === 'success') {
+            document.getElementById('detail-like-count').textContent = data.data.likes_count;
+            updateLikeBtn(data.data.is_liked);
+            App.showToast(data.message, 'success');
+          }
+        } catch (e) {
+          App.showToast('Network error.', 'error');
+        }
+      }
+
+      async function submitRating(stars) {
+        const user = App.getUser();
+        if (!user) {
+          App.showToast('Please login to rate artworks.', 'warning');
+          setTimeout(() => { window.location.href = 'login.html'; }, 1000);
+          return;
+        }
+
+        try {
+          const res = await fetch('api/interactions.php?action=rate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ artwork_id: artworkId, rating: stars })
+          });
+          const data = await res.json();
+          if (data.status === 'success') {
+            document.getElementById('detail-avg-rating').textContent = `★ ${Number(data.data.avg_rating).toFixed(1)} / 5.0`;
+            document.getElementById('detail-ratings-count').textContent = data.data.ratings_count;
+            document.getElementById('my-rating-feedback').textContent = `You rated this ${stars} stars.`;
+            App.showToast(data.message, 'success');
+          }
+        } catch (e) {
+          App.showToast('Rating failed.', 'error');
+        }
+      }
+
+      async function postComment(e) {
+        e.preventDefault();
+        const user = App.getUser();
+        if (!user) {
+          App.showToast('Please login to comment.', 'warning');
+          setTimeout(() => { window.location.href = 'login.html'; }, 1000);
+          return;
+        }
+
+        const input = document.getElementById('comment-input');
+        const text = input.value.trim();
+        if (!text) return;
+
+        const btn = document.getElementById('comment-submit-btn');
+        btn.disabled = true;
+
+        try {
+          const res = await fetch('api/interactions.php?action=comment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ artwork_id: artworkId, comment: text })
+          });
+          const data = await res.json();
+          if (data.status === 'success') {
+            input.value = '';
+            renderComments(data.data.comments || []);
+            App.showToast('Comment posted successfully!', 'success');
+          } else {
+            App.showToast(data.message, 'error');
+          }
+        } catch (err) {
+          App.showToast('Comment failed.', 'error');
+        } finally {
+          btn.disabled = false;
+        }
+      }
+
+      async function toggleFollow() {
+        const user = App.getUser();
+        if (!user) {
+          App.showToast('Please login to follow artists.', 'warning');
+          setTimeout(() => { window.location.href = 'login.html'; }, 1000);
+          return;
+        }
+
+        if (!currentArtwork) return;
+
+        try {
+          const res = await fetch('api/artists.php?action=follow_toggle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ artist_id: currentArtwork.user_id })
+          });
+          const data = await res.json();
+          if (data.status === 'success') {
+            updateFollowBtn(data.data.is_following);
+            App.showToast(data.message, 'success');
+          } else {
+            App.showToast(data.message, 'error');
+          }
+        } catch (e) {
+          App.showToast('Follow failed.', 'error');
+        }
+      }
+
+      function copyShareLink() {
+        navigator.clipboard.writeText(window.location.href);
+        App.showToast('Direct link copied to clipboard!', 'info');
+      }
+
+      return {
+        init,
+        toggleLike,
+        submitRating,
+        postComment,
+        toggleFollow,
+        copyShareLink
+      };
+    })();
+
+    document.addEventListener('DOMContentLoaded', ArtworkDetail.init);
+  </script>
+</body>
+</html>

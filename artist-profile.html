@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artist Showcase Portfolio | NSBM ArtCraft</title>
+  <link rel="stylesheet" href="assets/css/material.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- Dynamic Application Header -->
+  <header id="app-header"></header>
+
+  <main class="container" style="padding: 40px 20px;">
+    <!-- Profile Header Card -->
+    <div class="card" style="padding: 36px; margin-bottom: 36px; display: flex; gap: 30px; align-items: center; flex-wrap: wrap;">
+      <img id="profile-avatar" src="assets/images/avatar-default.png" style="width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 4px solid var(--nsbm-green); box-shadow: var(--shadow-md);">
+      
+      <div style="flex: 1; min-width: 280px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+          <div>
+            <h1 id="profile-name" style="font-size: 2rem; font-weight: 800; color: var(--nsbm-blue); line-height: 1.1; margin-bottom: 4px;">Student Name</h1>
+            <div id="profile-meta" style="font-size: 0.9rem; font-weight: 600; color: var(--nsbm-green);">Faculty &bull; Student ID</div>
+          </div>
+          <button id="profile-follow-btn" class="btn btn-outline" onclick="toggleFollow()">+ Follow Artist</button>
+        </div>
+
+        <p id="profile-bio" style="color: var(--text-main); font-size: 0.95rem; line-height: 1.6; margin: 16px 0;">
+          Artist bio...
+        </p>
+
+        <div style="display: flex; gap: 24px;">
+          <div><strong id="stat-artworks-cnt" style="color: var(--nsbm-blue); font-size: 1.15rem;">0</strong> <span style="font-size: 0.85rem; color: var(--text-muted);">Artworks</span></div>
+          <div><strong id="stat-followers-cnt" style="color: var(--nsbm-blue); font-size: 1.15rem;">0</strong> <span style="font-size: 0.85rem; color: var(--text-muted);">Followers</span></div>
+          <div><strong id="stat-exhibitions-cnt" style="color: var(--nsbm-blue); font-size: 1.15rem;">0</strong> <span style="font-size: 0.85rem; color: var(--text-muted);">Exhibitions</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Artworks Showcase -->
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Showcase Gallery</h2>
+        <p class="section-subtitle">Original creations and artifacts by this student</p>
+      </div>
+    </div>
+
+    <div class="art-grid" id="artist-artworks-grid" style="margin-bottom: 50px;">
+      <!-- Loaded dynamically -->
+    </div>
+
+    <!-- Exhibitions Participated -->
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Showcase Exhibitions Participated</h2>
+        <p class="section-subtitle">University events and creative galleries where this artist displayed works</p>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px;" id="artist-exhibitions-grid">
+      <!-- Loaded dynamically -->
+    </div>
+  </main>
+
+  <!-- Dynamic Application Footer -->
+  <div id="app-footer"></div>
+
+  <!-- Scripts -->
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/gallery.js"></script>
+  <script>
+    let artistId = 0;
+    let artistData = null;
+
+    async function init() {
+      const urlParams = new URLSearchParams(window.location.search);
+      artistId = parseInt(urlParams.get('id') || 0);
+
+      if (!artistId) {
+        window.location.href = 'artists.html';
+        return;
+      }
+
+      await loadProfile();
+    }
+
+    async function loadProfile() {
+      try {
+        const res = await fetch(`api/artists.php?action=detail&id=${artistId}`);
+        const data = await res.json();
+        if (data.status === 'success') {
+          artistData = data.data.artist;
+          const artworks = data.data.artworks || [];
+          const exhibitions = data.data.exhibitions || [];
+          renderProfile(artistData, artworks, exhibitions);
+        } else {
+          App.showToast(data.message || 'Artist not found.', 'error');
+          setTimeout(() => { window.location.href = 'artists.html'; }, 1500);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function renderProfile(art, artworks, exhibitions) {
+      document.title = `${art.name}'s Portfolio | NSBM ArtCraft`;
+      document.getElementById('profile-name').textContent = art.name;
+      document.getElementById('profile-avatar').src = art.avatar || 'assets/images/avatar-default.png';
+      document.getElementById('profile-meta').textContent = `${art.faculty} &bull; ${art.student_id || 'Student'}`;
+      document.getElementById('profile-bio').textContent = art.bio || 'Student artist and creative thinker at NSBM Green University.';
+      
+      document.getElementById('stat-artworks-cnt').textContent = artworks.length;
+      document.getElementById('stat-followers-cnt').textContent = art.followers_count;
+      document.getElementById('stat-exhibitions-cnt').textContent = exhibitions.length;
+
+      updateFollowBtn(art.is_following);
+
+      // Render artworks
+      const artGrid = document.getElementById('artist-artworks-grid');
+      if (artworks.length === 0) {
+        artGrid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; background: #fff; border-radius: 8px;">No approved artworks yet.</div>';
+      } else {
+        let html = '';
+        artworks.forEach(a => {
+          html += `
+            <div class="card artwork-card">
+              <div class="card-img-wrap">
+                <a href="artwork-detail.html?id=${a.id}">
+                  <img src="${a.image_path}" class="card-img-top" alt="${a.title}">
+                </a>
+                <span class="card-badge ${a.is_featured == 1 ? 'featured' : ''}">
+                  ${a.is_featured == 1 ? '★ Featured' : a.category_name}
+                </span>
+              </div>
+              <div class="card-body">
+                <a href="artwork-detail.html?id=${a.id}">
+                  <h3 class="card-title">${a.title}</h3>
+                </a>
+                <p class="card-text">${a.description ? (a.description.length > 70 ? a.description.substring(0, 70) + '...' : a.description) : ''}</p>
+                <div style="margin-bottom: 12px; display: flex; gap: 6px;">
+                  <span class="chip chip-green">${a.medium}</span>
+                </div>
+                <div class="card-footer">
+                  <span style="font-size: 0.8rem; color: var(--text-muted);">${a.created_at.split(' ')[0]}</span>
+                  <div class="card-metrics">
+                    <span>❤️ ${a.likes_count}</span>
+                    <span style="color: var(--color-gold); font-weight: 700;">★ ${a.avg_rating}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        artGrid.innerHTML = html;
+      }
+
+      // Render exhibitions
+      const exGrid = document.getElementById('artist-exhibitions-grid');
+      if (exhibitions.length === 0) {
+        exGrid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; background: #fff; border-radius: 8px;">No exhibition participations yet.</div>';
+      } else {
+        let html = '';
+        exhibitions.forEach(ex => {
+          html += `
+            <div class="card" style="padding: 20px;">
+              <span class="chip chip-green" style="margin-bottom: 8px;">${ex.status.toUpperCase()}</span>
+              <a href="exhibition-detail.html?id=${ex.id}" style="font-weight: 800; font-size: 1.1rem; color: var(--nsbm-blue); display: block; margin-bottom: 6px;">
+                ${ex.title}
+              </a>
+              <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 10px;">🏛 ${ex.venue} &bull; 📅 ${ex.start_date}</div>
+              ${ex.art_title ? `
+                <div style="background: var(--bg-body); padding: 8px 12px; border-radius: 4px; font-size: 0.85rem; border: 1px solid var(--border-color);">
+                  Showcased: <strong>${ex.art_title}</strong>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        });
+        exGrid.innerHTML = html;
+      }
+    }
+
+    function updateFollowBtn(isFollowing) {
+      const btn = document.getElementById('profile-follow-btn');
+      if (isFollowing) {
+        btn.className = 'btn btn-primary';
+        btn.textContent = '✓ Following Artist';
+      } else {
+        btn.className = 'btn btn-outline';
+        btn.textContent = '+ Follow Artist';
+      }
+    }
+
+    async function toggleFollow() {
+      const user = App.getUser();
+      if (!user) {
+        App.showToast('Please login to follow creators.', 'warning');
+        setTimeout(() => { window.location.href = 'login.html'; }, 1000);
+        return;
+      }
+
+      try {
+        const res = await fetch('api/artists.php?action=follow_toggle', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ artist_id: artistId })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          updateFollowBtn(data.data.is_following);
+          document.getElementById('stat-followers-cnt').textContent = data.data.followers_count;
+          App.showToast(data.message, 'success');
+        } else {
+          App.showToast(data.message, 'error');
+        }
+      } catch (e) {
+        App.showToast('Network error.', 'error');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

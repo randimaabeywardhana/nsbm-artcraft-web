@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Submissions | NSBM ArtCraft</title>
+  <link rel="stylesheet" href="assets/css/material.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- Dynamic Application Header -->
+  <header id="app-header"></header>
+
+  <div style="background: var(--nsbm-blue); color: #fff; padding: 40px 0 30px; border-bottom: 3px solid var(--nsbm-green);">
+    <div class="container">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+        <div>
+          <h1 style="font-size: 2.1rem; font-weight: 800;">My Artwork Submissions</h1>
+          <p style="color: #CBD5E1; font-size: 0.95rem; margin-top: 4px;">Track your review status, curator feedback, community engagement, and manage your portfolio</p>
+        </div>
+        <a href="upload-artwork.html" class="btn btn-primary">
+          + Submit New Creation
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <main class="container" style="padding: 40px 20px;">
+    <!-- Filter Tabs -->
+    <div style="display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap;">
+      <button class="cat-tab active" onclick="filterSubmissions('all', this)">All Submissions (<span id="cnt-all">0</span>)</button>
+      <button class="cat-tab" onclick="filterSubmissions('approved', this)">Approved & Live (<span id="cnt-approved">0</span>)</button>
+      <button class="cat-tab" onclick="filterSubmissions('pending', this)">Under Review (<span id="cnt-pending">0</span>)</button>
+      <button class="cat-tab" onclick="filterSubmissions('rejected', this)">Revisions Needed (<span id="cnt-rejected">0</span>)</button>
+    </div>
+
+    <!-- Submissions Table Card -->
+    <div class="data-table-card">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Preview</th>
+              <th>Artwork Title & Category</th>
+              <th>Medium & Specs</th>
+              <th>Review Status</th>
+              <th>Community Engagement</th>
+              <th>Submission Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="my-submissions-body">
+            <tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted);">Loading your submissions...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Edit Submission Modal -->
+  <div class="modal-overlay" id="edit-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Edit Submission Details</h3>
+        <button class="modal-close" onclick="closeEditModal()">&times;</button>
+      </div>
+      <form id="edit-form" onsubmit="handleEditSubmit(event)">
+        <input type="hidden" id="edit-id">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Artwork Title</label>
+            <input type="text" id="edit-title" class="form-control" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select id="edit-category" class="form-control" required></select>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="form-group">
+              <label class="form-label">Medium</label>
+              <input type="text" id="edit-medium" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Dimensions</label>
+              <input type="text" id="edit-dimensions" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea id="edit-description" class="form-control" rows="3" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeEditModal()">Cancel</button>
+          <button type="submit" id="edit-save-btn" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Dynamic Application Footer -->
+  <div id="app-footer"></div>
+
+  <!-- Scripts -->
+  <script src="assets/js/app.js"></script>
+  <script>
+    let myArtworks = [];
+    let currentFilter = 'all';
+
+    async function init() {
+      await App.checkAuth();
+      const user = App.getUser();
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+      await loadSubmissions();
+    }
+
+    async function loadSubmissions() {
+      const tbody = document.getElementById('my-submissions-body');
+      try {
+        const res = await fetch('api/artworks.php?action=list&status=my');
+        const data = await res.json();
+        if (data.status === 'success') {
+          myArtworks = data.data.artworks || [];
+          updateCounts();
+          renderTable();
+        } else {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--color-danger); padding: 30px;">${data.message}</td></tr>`;
+        }
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--color-danger); padding: 30px;">Failed to load submissions.</td></tr>`;
+      }
+    }
+
+    function updateCounts() {
+      document.getElementById('cnt-all').textContent = myArtworks.length;
+      document.getElementById('cnt-approved').textContent = myArtworks.filter(a => a.status === 'approved').length;
+      document.getElementById('cnt-pending').textContent = myArtworks.filter(a => a.status === 'pending').length;
+      document.getElementById('cnt-rejected').textContent = myArtworks.filter(a => a.status === 'rejected').length;
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('my-submissions-body');
+      let filtered = myArtworks;
+      if (currentFilter !== 'all') {
+        filtered = myArtworks.filter(a => a.status === currentFilter);
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted);">
+              No submissions found under this filter. <a href="upload-artwork.html" style="font-weight: 700;">Submit an artwork now &rarr;</a>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      let html = '';
+      filtered.forEach(art => {
+        let statusBadge = '<span class="chip chip-warning">Pending Review</span>';
+        if (art.status === 'approved') statusBadge = '<span class="chip chip-green">Approved & Live</span>';
+        if (art.status === 'rejected') statusBadge = '<span class="chip chip-danger">Revision Needed</span>';
+
+        html += `
+          <tr>
+            <td><img src="${art.image_path}" class="table-thumb" alt="${art.title}"></td>
+            <td>
+              <a href="${art.status === 'approved' ? 'artwork-detail.html?id=' + art.id : 'javascript:void(0)'}" style="font-weight: 700; color: var(--nsbm-blue);">
+                ${art.title}
+              </a><br>
+              <span style="font-size: 0.78rem; color: var(--text-muted);">${art.category_name}</span>
+            </td>
+            <td>
+              <span style="font-size: 0.85rem; font-weight: 600;">${art.medium}</span><br>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">${art.dimensions || 'N/A'}</span>
+            </td>
+            <td>
+              ${statusBadge}
+              ${art.admin_feedback ? `
+                <div style="font-size: 0.78rem; color: var(--color-danger); margin-top: 4px; max-width: 220px; line-height: 1.3;">
+                  <strong>Note:</strong> ${art.admin_feedback}
+                </div>
+              ` : ''}
+            </td>
+            <td>
+              <span title="Likes">❤️ ${art.likes_count}</span> &bull; 
+              <span title="Rating">⭐ ${art.avg_rating}</span> &bull; 
+              <span title="Views">👁 ${art.views_count}</span>
+            </td>
+            <td style="font-size: 0.82rem; color: var(--text-muted);">${art.created_at.split(' ')[0]}</td>
+            <td>
+              <div style="display: flex; gap: 6px;">
+                <button class="btn btn-outline btn-sm" onclick="openEditModal(${art.id})">Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteMyArtwork(${art.id})">Delete</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+    }
+
+    function filterSubmissions(status, btn) {
+      currentFilter = status;
+      document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderTable();
+    }
+
+    async function openEditModal(id) {
+      const art = myArtworks.find(a => a.id == id);
+      if (!art) return;
+
+      document.getElementById('edit-id').value = art.id;
+      document.getElementById('edit-title').value = art.title;
+      document.getElementById('edit-medium').value = art.medium;
+      document.getElementById('edit-dimensions').value = art.dimensions || '';
+      document.getElementById('edit-description').value = art.description;
+
+      // Populate categories
+      try {
+        const res = await fetch('api/categories.php?action=list');
+        const data = await res.json();
+        const sel = document.getElementById('edit-category');
+        sel.innerHTML = '';
+        (data.data.categories || []).forEach(c => {
+          sel.innerHTML += `<option value="${c.id}" ${c.id == art.category_id ? 'selected' : ''}>${c.name}</option>`;
+        });
+      } catch (e) {}
+
+      document.getElementById('edit-modal').classList.add('active');
+    }
+
+    function closeEditModal() {
+      document.getElementById('edit-modal').classList.remove('active');
+    }
+
+    async function handleEditSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('edit-id').value;
+      const payload = {
+        id: parseInt(id),
+        title: document.getElementById('edit-title').value.trim(),
+        category_id: parseInt(document.getElementById('edit-category').value),
+        medium: document.getElementById('edit-medium').value.trim(),
+        dimensions: document.getElementById('edit-dimensions').value.trim() || 'N/A',
+        description: document.getElementById('edit-description').value.trim()
+      };
+
+      try {
+        const res = await fetch('api/artworks.php?action=update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          App.showToast('Submission updated successfully!', 'success');
+          closeEditModal();
+          loadSubmissions();
+        } else {
+          App.showToast(data.message, 'error');
+        }
+      } catch (err) {
+        App.showToast('Update failed.', 'error');
+      }
+    }
+
+    async function deleteMyArtwork(id) {
+      if (!confirm('Are you sure you want to delete this submission?')) return;
+      try {
+        const res = await fetch('api/artworks.php?action=delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: id })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          App.showToast('Artwork deleted successfully.', 'success');
+          loadSubmissions();
+        } else {
+          App.showToast(data.message, 'error');
+        }
+      } catch (e) {
+        App.showToast('Failed to delete.', 'error');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
