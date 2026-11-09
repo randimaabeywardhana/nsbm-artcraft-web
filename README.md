@@ -1,4 +1,4 @@
-# NSBM ArtCraft - Student Arts & Handcraft Showcasing System
+# NSBM ArtCraft — Student Arts & Handcraft Showcasing System
 **NSBM Green University | Faculty of Computing**  
 *Module: Web and Mobile Application Development (Batch 26.1 IFSL)*  
 *Project Topic 2: NSBM ArtCraft*
@@ -6,20 +6,23 @@
 ---
 
 ## 🎨 Project Overview
-**NSBM ArtCraft** is an enterprise-grade university web application developed using **HTML, CSS (Material UI), JavaScript, PHP, and MySQL**. It empowers students from the Faculty of Computing, Business, and Science to exhibit their creative paintings, architectural sketches, handcrafted pottery, 3D concepts, and photography to the university community, while participating in campus exhibitions and cultural vernissages.
+
+**NSBM ArtCraft** is a web application built with **HTML, CSS (Material Design 3), JavaScript, PHP, and MySQL**. It allows students to showcase paintings, sketches, handcraft, photography, and digital art, and to register for campus exhibitions. Admin users moderate submissions, manage categories and events, and generate reports.
 
 ### Key Architectural Highlights
-- **Decoupled Frontend & Backend Architecture**:
-  - **Frontend**: Clean `.html` files communicating asynchronously with backend endpoints via AJAX / Fetch API.
-  - **Backend**: Clean `.php` RESTful API endpoints delivering structured JSON responses.
-- **WAMP Server Compatibility**: Specifically optimized and verified for **Apache 2.2.22**, **PHP 5.4.3**, and **MySQL 5.5.24**.
-- **NSBM Brand Identity**: Styled with NSBM's official color palette (Emerald Green `#00843D`, Navy Blue `#002B49`, and Clean White `#FFFFFF`) along with the official NSBM seal logo (`.png`).
-- **Strict PNG Image Pipeline**: 100% PNG image assets without SVG dependencies.
-- **Comprehensive Notification Center**: Real-time alerts for approvals, rejections with curator feedback, community likes, comments, 5-star ratings, follows, and exhibition registrations.
-- **Database Architecture**: Engineered by the **Group Leader & QA Lead** for the 6-member team, featuring 3NF normalization, foreign key cascading integrity, and pre-seeded demonstration data.
+
+- **Decoupled Frontend & Backend Architecture**
+  - **Frontend** — clean `.html` pages that call backend endpoints asynchronously via the Fetch API.
+  - **Backend** — PHP JSON API endpoints returning structured responses.
+- **Material Design 3 system** — dynamic color tokens, elevation, motion, and full dark/light theming.
+- **REST API contract** — every endpoint returns `{ ok: true, data }` or `{ ok: false, error }`.
+- **Session-based authentication** — PHP `HttpOnly`, `SameSite=Lax`, `Secure` cookies. No token storage in `localStorage`.
+- **Approval workflow** — every artwork starts as `pending` and only appears in the public gallery after admin approval. Rejections carry a curator's note back to the student.
+- **Reports module** — live KPI cards and Chart.js visualisations; CSV export supported.
+- **Full CRUD** across artworks, categories, events, likes, ratings, comments, and follows.
+- **Responsive** — desktop, tablet, and mobile layouts with dedicated bottom navigation.
 
 ---
-
 
 ## 📁 System File Structure
 
@@ -79,23 +82,32 @@ nsbm-artcraft-web/
 
 ## 👥 Project Team Roles & Attributions (6-Member Team)
 
-- **Member 1 (Team Leader & Database Architect)**: Conceptualized system architecture, designed the 10-table normalized relational database schema (`nsbm-artcraft-web.sql`), foreign key cascades, and core PDO connection abstraction.
-- **Member 2 (QA Lead & Security Specialist)**: Verified database constraints, optimized query indexes, implemented SHA-256 password salting compatible with PHP 5.4, and validated data sanitation.
-- **Member 3 (Frontend Lead - UI/UX Designer)**: Engineered the Material UI design system matching the official NSBM Green University branding palette (`material.css` & `style.css`).
-- **Member 4 (Frontend Developer - Client Logic)**: Built asynchronous client-side controllers (`app.js`, `gallery.js`, `upload.js`), interactive modals, drag-and-drop PNG uploader, and notification badges.
-- **Member 5 (Backend Developer - CRUD & Auth)**: Developed PHP 5.4 API controllers (`auth.php`, `artworks.php`, `categories.php`, `upload.php`), session handling, and file upload validation.
-- **Member 6 (Backend & Reporting Specialist)**: Implemented exhibition workflows (`exhibitions.php`), interaction endpoints (`interactions.php`, `notifications.php`), and automated CSV export engines (`reports.php`).
+Member 1 (Team Leader, Database Architect & Deployment Lead): Designed the 10-table normalized relational database schema (nsbm-artcraft-web.sql) with foreign key cascades, programmed the PDO connection layer (api/config.php), managed the GitHub repository, handled live deployment on InfinityFree, and compiled the final project report.
+
+Member 2 (Backend API Developer & QA Lead): Built core REST endpoints — artworks.php, categories.php, exhibitions.php, artists.php, interactions.php, notifications.php, reports.php, upload.php — collaborated on login.html & register.html, and executed end-to-end QA testing across student and curator flows.
+
+Member 3 (Frontend Lead & UI/UX Designer): Engineered the Material UI design system (material.css & style.css) using NSBM's brand palette, built the global appbar with the official NSBM seal PNG, designed the homepage (index.html), and developed shared navigation/toast logic in app.js.
+
+Member 4 (Student Panel Frontend Developer): Built the dynamic gallery (gallery.html & gallery.js), artwork detail with 5-star ratings and comments (artwork-detail.html), drag-and-drop upload form (upload-artwork.html & upload.js), submission tracking (my-submissions.html), artist directory/profiles, and notification center.
+
+Member 5 (Admin Panel & Exhibitions Frontend Developer): Developed the curator dashboard (admin-dashboard.html & admin.js), moderation table with feedback modals (admin-artworks.html), category manager (admin-categories.html), exhibitions manager (admin-exhibitions.html), print-friendly reports (admin-reports.html), and the public exhibitions interface (exhibitions.html & exhibition-detail.html).
+
+Member 6 (Authentication, Security & Media Assets Developer): Implemented the secure authentication API (api/auth.php) with salted password hashing, session persistence, and role-based access validation; prepared and integrated all PNG media assets — 12 sample artworks, category thumbnails, exhibition banners, and user avatars.
 
 ---
 
 ## 🛡️ Quality Assurance & Compatibility Checklist
-- [x] Separate clean `.html` frontend files and `.php` backend files.
-- [x] Verified compatibility with WAMP stack: Apache 2.2.22, PHP 5.4.3, MySQL 5.5.24.
-- [x] Database name configured as `nsbm-artcraft-web`.
-- [x] Official NSBM logo included in PNG format.
-- [x] All images formatted as `.png` (zero SVG files).
-- [x] Complete notification system with unread badge count and push alerts.
-- [x] No prices displayed anywhere in the system.
-- [x] Professional Material UI styling with elevation shadows and mobile responsiveness.
-- [x] Complete CRUD operations across Artworks, Categories, Exhibitions, Ratings, Likes, and Comments.
-- [x] CSV data export and print-ready report generators.
+☑ Architecture: Decoupled frontend (.html) and backend REST API (.php) with JSON responses.
+☑ Security: Salted SHA-256 password hashing, secure sessions, and server-side role guards (Admin/Student).
+☑ Data Protection: 100% PDO prepared statements (SQL injection prevention) and XSS output escaping.
+☑ CRUD Operations: Complete Create, Read, Update, Delete across artworks, categories, and exhibitions.
+☑ Approval Workflow: Moderation queue with pending → approved / rejected (with curator feedback).
+☑ File Uploads: Strict PNG validation, 5 MB file size limit, and conflict-free unique filenames.
+☑ Interactions: Live 5-star ratings, like toggle, comments feed, and artist follow system.
+☑ Notifications: Real-time in-app alerts for status updates, reviews, and community interactions.
+☑ Exhibitions: Event scheduling, student registration, and participant roster management.
+☑ Reports & Analytics: Dashboard KPI cards, category distribution metrics, and printable summaries.
+☑ UI & Branding: Official NSBM colors (Green/Navy/White) and responsive Material UI design.
+☑ Environment: Tested and functional on local WAMP (PHP 5.4 / MySQL 5.5) and live InfinityFree hosting.
+☑ Cross-Browser: Verified on Chrome, Firefox, Edge, and mobile viewports.
+
